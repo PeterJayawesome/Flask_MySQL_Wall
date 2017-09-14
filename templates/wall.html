@@ -3,22 +3,61 @@
 <head>
 	<title>Peter's Wall</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-	<link rel="stylesheet" type="text/css" href="../static/css/wall.css">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/wall.css')}}">
 </head>
 <body>
 	<div id="topbar">
 		<p>Peter's Wall</p>
-		<p id="">Welcome {{first_name}}</p>
+		<p id="">Welcome {{name}}</p>
 		<a href="/" id="logoff">log off</a>
 	</div>
-	<form action="/post" method="post" class="message">
+	<form action="/message" method="post" class="message">
 		<p>Post a message</p>
 		<textarea name="message"></textarea>
 		<input type="submit" name="submit" value="Post a message">
 	</form>
 	<div id="wall">
+		{% if messages %}
+			{% for i in index %}
+				<h3>{{messages[i]['name']}}-{{messages[i]['time']}}</h3>
+				<div class = 'messagearea'>
+					<p class='mcontent'>{{messages[i]['message']}}</p>
+					<div class = 'commendarae'>
+						{% for comment in comments[i] %}
+							<p>{{comment['name']}}-{{comment['time']}}</p>
+							<p>{{comment['comment']}}</p>
+						{% endfor %}
+						<form action='/comment' method='post'>
+							<input type='hidden' name='message_id' value="{{messages[i]['id']}}">
+							<textarea name = 'comment'></textarea>
+							<input type='submit' name='submit' value='Post Comment'>
+						</form>
+					</div>
+				</div>
+			{% endfor %}
+		{% endif %}
+		
+
 		
 	</div>
-	<script type="text/javascript" src="../static/js/wall.js"></script>
+	<!-- <script type="text/javascript">
+		var output = '';
+		var messages = {{messages}};
+		if(messages){
+			for(var i = 0; i < messages.length; i++){
+				output += "<h3>"+messages[i]['name']+"-"+messages[i]['time']+"</h3>";
+				output += "<div class = 'messagearea'>";
+				output += "<p class='mcontent'>"+messages[i]['message']+"</p>";
+				output += "<div class = 'commendarae'>";
+				for(var j = 0; j<{{comments}}[i].length; j++){
+					output += "<p>"+{{comments}}[i]['name']+"-"+{{comments}}[i]['time']+"</p>";
+					output += "<p>"+{{comments}}[i]['comment']+"</p>";
+				}
+				output += "<form action='/comment' method='post'><input type='hidden' name='message_id' value='"+{{messages}}[i]['id']+"'><textarea name = 'comment'></textarea><input type='submit' name='submit' value='Post Comment'></form></div></div>";
+			}
+			$('#wall').html(output);
+		}
+		
+	</script> -->
 </body>
 </html>
