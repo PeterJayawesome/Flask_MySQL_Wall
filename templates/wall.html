@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Peter's Wall</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="../static/css/wall.css">
+</head>
+<body>
+	<div id="topbar">
+		<p>Peter's Wall</p>
+		<p id="">Welcome {{first_name}}</p>
+		<a href="/" id="logoff">log off</a>
+	</div>
+	<form action="/post" method="post" class="message">
+		<p>Post a message</p>
+		<textarea name="message"></textarea>
+		<input type="submit" name="submit" value="Post a message">
+	</form>
+	<div id="wall">
+		
+	</div>
+	<script type="text/javascript" src="../static/js/wall.js"></script>
+</body>
+</html>

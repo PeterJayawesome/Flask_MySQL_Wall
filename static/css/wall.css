@@ -1,0 +1,10 @@
+#topbar{
+	border-bottom: 2px solid black; 
+}
+#topbar p{
+	display: inline-block;
+}
+textarea{
+	width: 70%;
+	display: block;
+}

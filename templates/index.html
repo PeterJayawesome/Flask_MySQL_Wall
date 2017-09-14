@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Registration and Log in</title>
+</head>
+<body>
+<h2>Log in here:</h2>
+
+	<form action="/login" method="post">
+	{% if session['SL'] == 'l' %}
+		{% with messages = get_flashed_messages() %}
+			{% if messages %}
+				{% for message in messages %}
+					<p>{{message}}</p>
+				{% endfor %}
+			{% endif %}
+		{% endwith %}
+	{% endif %}
+	<table>
+		<tr>
+			<td><label>Email:</label></td>
+			<td><input type="text" name="email"></td>
+		</tr>
+		<tr>
+			<td><label>Password:</label></td>
+			<td><input type="password" name="password"></td>
+		</tr>
+	</table>
+		<input type="submit" value="Log In">
+		<!-- <a href="/signup">Not have an account yet? click here to sign up</a> -->
+	</form>
+	<h2>Not have an account yet? Sign up here:</h2>
+	<form action="/signup" method="post">
+	{% if session['SL'] == 's' %}
+		{% with messages = get_flashed_messages() %}
+			{% if messages %}
+				{% for message in messages %}
+					<p>{{message}}</p>
+				{% endfor %}
+			{% endif %}
+		{% endwith %}
+	{% endif %}
+	<table>
+		<tr>
+			<td><label>First Name:</label></td>
+			<td><input type="text" name="first"></td>
+		</tr>
+		<tr>
+			<td><label>Last Name:</label></td>
+			<td><input type="text" name="last"></td>
+		</tr>
+		<tr>
+			<td><label>Email Address:</label></td>
+			<td><input type="text" name="email"></td>
+		</tr>
+		<tr>
+			<td><label>Password:</label></td>
+			<td><input type="password" name="password"></td>
+		</tr>
+		<tr>
+			<td><label>Confirm Password:</label></td>
+			<td><input type="password" name="confirm"></td>
+		</tr>
+	</table>
+		<input type="submit" value="Sign Up">
+	</form>
+</body>
+</html>
