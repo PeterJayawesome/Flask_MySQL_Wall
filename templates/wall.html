@@ -22,42 +22,104 @@
 				<h3>{{messages[i]['name']}}-{{messages[i]['time']}}</h3>
 				<div class = 'messagearea'>
 					<p class='mcontent'>{{messages[i]['message']}}</p>
-					<div class = 'commendarae'>
+					<div class='commentarea'>
 						{% for comment in comments[i] %}
 							<p>{{comment['name']}}-{{comment['time']}}</p>
 							<p>{{comment['comment']}}</p>
+							{% if comment['user_id'] == session['user_id'] %}
+								<button id="{{comment['id']}}">delete</button>
+							{% endif %}
 						{% endfor %}
-						<form action='/comment' method='post'>
-							<input type='hidden' name='message_id' value="{{messages[i]['id']}}">
-							<textarea name = 'comment'></textarea>
-							<input type='submit' name='submit' value='Post Comment'>
-						</form>
+					</div>
+					<div class='commentpost'>
+						<textarea name = 'comment'></textarea>
+						<button id= "{{messages[i]['id']}}">Post a comment</button>
 					</div>
 				</div>
 			{% endfor %}
-		{% endif %}
-		
-
-		
+		{% endif %}	
 	</div>
-	<!-- <script type="text/javascript">
-		var output = '';
-		var messages = {{messages}};
-		if(messages){
-			for(var i = 0; i < messages.length; i++){
-				output += "<h3>"+messages[i]['name']+"-"+messages[i]['time']+"</h3>";
-				output += "<div class = 'messagearea'>";
-				output += "<p class='mcontent'>"+messages[i]['message']+"</p>";
-				output += "<div class = 'commendarae'>";
-				for(var j = 0; j<{{comments}}[i].length; j++){
-					output += "<p>"+{{comments}}[i]['name']+"-"+{{comments}}[i]['time']+"</p>";
-					output += "<p>"+{{comments}}[i]['comment']+"</p>";
+	<div id="loadmore">
+		<p>Click to show more...</p>
+	</div>
+	<script type="text/javascript">
+		$(document).on("click",'.commentpost button',function(){
+			// console.log($(this).siblings().val());
+			$(this).parent().siblings(".commentarea").attr("id","commentchange");
+			var data = {"id" : this.id,
+						"comment" : $(this).siblings().val()};
+			$.getJSON("/comment",data,function(res){
+				// console.log(res);
+				var output = '';
+				for(var i=0; i<res.length;i++){
+					output += "<p>"+res[i].name+"-"+res[i].time+"</p><p>"+res[i].comment+"</p>";
+					if(res[i]['user_id'] == {{session['user_id']}}){
+						output += "<button id='"+res[i]['id']+"'>delete</button> "
+					}
 				}
-				output += "<form action='/comment' method='post'><input type='hidden' name='message_id' value='"+{{messages}}[i]['id']+"'><textarea name = 'comment'></textarea><input type='submit' name='submit' value='Post Comment'></form></div></div>";
-			}
-			$('#wall').html(output);
-		}
+				$("#commentchange").html(output);
+				$("#commentchange").attr('id','');
+			})
+		})
+		$(document).on("click",'.commentarea button',function(){
+			console.log($(this).siblings().val());
+			$(this).parent().attr("id","commentchange");
+			var data = {"id" : this.id};
+			$.getJSON("/comment",data,function(res){
+				console.log(res);
+				if(res){
+					var output = '';
+					for(var i=0; i<res.length;i++){
+						output += "<p>"+res[i].name+"-"+res[i].time+"</p><p>"+res[i].comment+"</p>";
+						if(res[i]['user_id'] == {{session['user_id']}}){
+							output += "<button id='"+res[i]['id']+"'>delete</button> "
+						}
+					}
+					$("#commentchange").html(output);
+					$("#commentchange").attr('id','');
+				}
+			})
+		})
+		// 	$('.commentarea button').click(function(){
+		// 		// console.log($(this).siblings().val());
+		// 		$(this).parent().attr("id","commentchange");
+		// 		var data = {"id" : this.id};
+		// 		$.getJSON("/comment",data,function(res){
+		// 			console.log(res);
+		// 			if(res){
+		// 				var output = '';
+		// 				for(var i=0; i<res.length;i++){
+		// 					output += "<p>"+res[i].name+"-"+res[i].time+"</p><p>"+res[i].comment+"</p>";
+		// 					if(res[i]['user_id'] == {{session['user_id']}}){
+		// 						output += "<button id='"+res[i]['id']+"'>delete</button> "
+		// 					}
+		// 				}
+		// 				$("#commentchange").html(output);
+		// 				$("#commentchange").attr('id','');
+		// 			}
+		// 		})
+
+					
+		// 	})
+		// })
 		
-	</script> -->
+		// var output = '';
+		// var messages = {{messages}};
+		// if(messages){
+		// 	for(var i = 0; i < messages.length; i++){
+		// 		output += "<h3>"+messages[i]['name']+"-"+messages[i]['time']+"</h3>";
+		// 		output += "<div class = 'messagearea'>";
+		// 		output += "<p class='mcontent'>"+messages[i]['message']+"</p>";
+		// 		output += "<div class = 'commendarae'>";
+		// 		for(var j = 0; j<{{comments}}[i].length; j++){
+		// 			output += "<p>"+{{comments}}[i]['name']+"-"+{{comments}}[i]['time']+"</p>";
+		// 			output += "<p>"+{{comments}}[i]['comment']+"</p>";
+		// 		}
+		// 		output += "<form action='/comment' method='post'><input type='hidden' name='message_id' value='"+{{messages}}[i]['id']+"'><textarea name = 'comment'></textarea><input type='submit' name='submit' value='Post Comment'></form></div></div>";
+		// 	}
+		// 	$('#wall').html(output);
+		// }
+		
+	</script>
 </body>
 </html>

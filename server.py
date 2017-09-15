@@ -10,10 +10,8 @@ app.secret_key = 'emails'
 mysql = MySQLConnector(app,'emaildb')
 @app.route('/')
 def index():
-	if 'log' not in session or 'SL' not in session or 'user_id' not in session:
-		session['log'] = False
-		session['SL'] = 'l'
-		session['user_id'] = None
+	session['log'] = False
+	session['user_id'] = None
 	return render_template('index.html')
 @app.route('/login',methods=['post'])
 def login():
@@ -42,7 +40,7 @@ def login():
 		flash('Please enter the email and password')
 		print session['SL']
 	if session['log'] == True:
-		flash('Log in successfully!')
+		# flash('Log in successfully!')
 		return redirect('/wall')
 	else: 
 		return redirect('/')
@@ -104,9 +102,9 @@ def wall():
 		messages = mysql.query_db(query)
 		comments = []
 		for i in xrange(len(messages)):
-			query = "SELECT CONCAT_WS(' ',first_name,last_name) AS name, comments.comment, comments.created_at AS time FROM comments JOIN users ON users.id = comments.user_id WHERE comments.message_id = "+str(messages[i]['id'])+" ORDER BY comments.created_at"
+			query = "SELECT CONCAT_WS(' ',users.first_name,last_name) AS name, comments.comment, comments.created_at AS time,comments.user_id,comments.id FROM comments JOIN users ON users.id = comments.user_id WHERE comments.message_id = "+str(messages[i]['id'])+" ORDER BY comments.created_at"
 			comments.append(mysql.query_db(query))
-		messages_index = range(min(5,len(messages)))
+		messages_index = range(len(messages))
 		return render_template('wall.html',name=name,messages=messages,comments=comments,index = messages_index)
 	return redirect('/')
 
@@ -119,14 +117,29 @@ def postmessage():
 	mysql.query_db(query,data)
 	return redirect('/wall')
 
-@app.route('/comment', methods=['post'])
+@app.route('/comment')
 def sentcomment():
 	query = "INSERT INTO comments(comment,created_at,updated_at,user_id,message_id) VALUES(:comment,NOW(),NOW(),:user_id,:message_id)"
-	data = {'comment':request.form['comment'],
+	data = {'comment':request.args.get('comment'),
 			'user_id':session['user_id'],
-			'message_id':request.form['message_id']
+			'message_id':request.args.get('id')
 			}
 	mysql.query_db(query,data)
-	return redirect('/wall')
+	query = "SELECT CONCAT_WS(' ',first_name,last_name) AS name, comments.comment, comments.created_at AS time,comments.user_id,comments.id FROM comments JOIN users ON users.id = comments.user_id WHERE comments.message_id = "+str(data['message_id'])+" ORDER BY comments.created_at"
+	return jsonify(mysql.query_db(query))
+@app.route('/delete')
+def delete():
+	data = {'id':request.args.get('id')}
+	query = "SELECT comments.created_at FROM comments WHERE comments.id = "+str(data['id'])+"comments.created_at BETWEEN timestamp(DATE_SUB(NOW(),INTERVAL 300 MINUTE)) AND timestamp(NOW())"
+	if mysql.query_db(query):
+		print mysql.query_db(query)
+		data['message_id'] = mysql.query_db(query)[0]['message_id']
+		query = "DELETE FROM comments WHERE comments.id = "+str(data['id'])
+		mysql.query_db(query)
+		query = "SELECT CONCAT_WS(' ',first_name,last_name) AS name, comments.comment, comments.created_at AS time,comments.user_id,comments.id FROM comments JOIN users ON users.id = comments.user_id WHERE comments.message_id = "+str(data['message_id'])+" ORDER BY comments.created_at"
+		return jsonify(mysql.query_db(query))
+	else:
+		return False
+
 
 app.run(debug = True)
