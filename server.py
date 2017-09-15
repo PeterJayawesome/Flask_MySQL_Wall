@@ -130,10 +130,14 @@ def sentcomment():
 @app.route('/delete')
 def delete():
 	data = {'id':request.args.get('id')}
-	query = "SELECT comments.created_at FROM comments WHERE comments.id = "+str(data['id'])+"comments.created_at BETWEEN timestamp(DATE_SUB(NOW(),INTERVAL 300 MINUTE)) AND timestamp(NOW())"
-	if mysql.query_db(query):
-		print mysql.query_db(query)
-		data['message_id'] = mysql.query_db(query)[0]['message_id']
+	query = "SELECT comments.created_at,comments.message_id FROM comments WHERE comments.id = "+str(data['id'])+" AND comments.created_at BETWEEN timestamp(DATE_SUB(NOW(),INTERVAL 3000 MINUTE)) AND timestamp(NOW())"
+	print 1
+	a = mysql.query_db(query)
+	print a
+	if a:
+		print 3
+		data['message_id'] = a[0]['message_id']
+		print data['message_id']
 		query = "DELETE FROM comments WHERE comments.id = "+str(data['id'])
 		mysql.query_db(query)
 		query = "SELECT CONCAT_WS(' ',first_name,last_name) AS name, comments.comment, comments.created_at AS time,comments.user_id,comments.id FROM comments JOIN users ON users.id = comments.user_id WHERE comments.message_id = "+str(data['message_id'])+" ORDER BY comments.created_at"

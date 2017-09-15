@@ -65,7 +65,7 @@
 			console.log($(this).siblings().val());
 			$(this).parent().attr("id","commentchange");
 			var data = {"id" : this.id};
-			$.getJSON("/comment",data,function(res){
+			$.getJSON("/delete",data,function(res){
 				console.log(res);
 				if(res){
 					var output = '';
